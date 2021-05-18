@@ -15,10 +15,12 @@ namespace DivisionGrupos
         public class Division
         {
 
-            public  List<string> Temas;
-            public  List<string> Personas;
-            public  List<string> Grupos;
+            public List<string> Temas;
+            public List<string> Personas;
+            public List<string> Grupos;
+            public List<string> seleccion;
 
+            //METODO QUE RECIBE LOS ARCHIVOS, LOS VAALIDA Y LOS INGRESA EN LISTAS
             public bool LeerArchivo(string pathEst, string pathTem, int cant)
             {
 
@@ -62,7 +64,7 @@ namespace DivisionGrupos
                  }*/
 
 
-                //LEER ARCHIVOS Y ENLISTARLOS
+                //LEER EL ARCHIVO DE PERSONAS Y ENLISTARLOS
                 while ((line = file.ReadLine()) != null)
                 {
 
@@ -70,6 +72,7 @@ namespace DivisionGrupos
                     countEst++;
                 }
 
+                //LEER EL ARCHIVO DE TEMAS Y ENLISTARLOS
                 line = null;
                 while ((line = file2.ReadLine()) != null)
                 {
@@ -89,12 +92,13 @@ namespace DivisionGrupos
 
             }
 
-
-            public void DivisionTemas(int cant)
+            //METODO QUE REALIZA LAS DIVISION DE GRUPO, TEMAS Y PERSONAS
+            public void DivisionGTE(int cant)
             {
-                List<string> seleccion = new List<string>();
-                List<int> exepciones = new List<int>();
+                seleccion = new List<string>();
                 Grupos = new List<string>();
+                List<int> exepciones = new List<int>();
+                
 
                 var random = new Random();
                 int index;
@@ -102,28 +106,35 @@ namespace DivisionGrupos
                 int index3;
                 int corridas = 0;
 
+                //PRUEBA
                 double persistance = getPercistanceOfStudents(Personas.Count, Temas.Count);
                 Console.WriteLine("Probabilidad " + persistance);
 
+
+                //SELECCION DE TEMAS
                 while (Temas.Count() > 0)
                 {
+                    //1-SE LLENA LA LISTA CON LOS GRUPOS
                     for (int i = 0; i < cant; i++)
                     {
                         Grupos.Add("Grupo# " + (i + 1));
                     }
 
+                    //2-SI HAY GRUPOS Y TEMAS SE AñADEN A LA LISTA DE SELEC
                     while (Grupos.Count() > 0 && Temas.Count() > 0)
                     {
                         index = random.Next(Grupos.Count());
                         index2 = random.Next(Temas.Count());
                         index3 = random.Next(Personas.Count());
 
+                        //2.1 si es la primera corrida se añade a la lista la palabra "[TEMAS]"
                         if (corridas == 0)
                         {
                             seleccion.Add(Grupos[index] + "   TEMAS: -> " + Temas[index2]);
                             Grupos.RemoveAt(index);
                             Temas.RemoveAt(index2);
                         }
+                        //2.2 si NO es la primera corrida NO se añade a la lista la palabra "[TEMAS]"
                         else
                         {
 
@@ -143,10 +154,13 @@ namespace DivisionGrupos
                     corridas++;
                 }
 
+                //3-AQUI SE INGRESA LA PALABRA "[ESTUDIANTE]" EN TODA LA LISTA
                 for (int i = 0; i < seleccion.Count(); i++)
                 {
                     seleccion[i] = (seleccion[i] + "     ESTUDIANTES: -> ");
                 }
+
+                //2-SI HAY ESTUDIANTES SE AñADEN A LA LISTA DE SELEC
                 while (Personas.Count() > 0)
                 {
                     for (int i = 0; i < cant; i++)
@@ -175,24 +189,19 @@ namespace DivisionGrupos
 
                 }
 
-
-                foreach (var item in seleccion)
-                {
-                    Console.WriteLine(item);
-                }
-
-
             }
 
+            //PRUEBA
             public double getPercistanceOfStudents(int students, int group)
             {
                 int npr = fact(students) / fact(students - group);
 
                 Console.WriteLine("Value of " + students + " P " + group + " = " + npr);
-                
+
                 return (100.0 / npr);
             }
 
+            //PRUEBA
             private static int fact(int n)
             {
                 int i, f = 1;
@@ -203,9 +212,7 @@ namespace DivisionGrupos
                 return f;
             }
 
-
-
-
+        }
 
             static void Main(string[] args)
             {
@@ -214,8 +221,10 @@ namespace DivisionGrupos
                 string pathEst = null;
                 string pathTem = null;
 
+                //INSTANCIA DE LA CLASE
                 var Objeto = new Division();
 
+                //SOLICITUD DE LAS DIRECCIONES DE LOS ARCHIVOS Y CANT DE GRUPOS
                 while (bucle)
                 {
                     Console.WriteLine("Ingrese el numero la cantida de grupos:");
@@ -226,18 +235,23 @@ namespace DivisionGrupos
                     Console.WriteLine("Ingrese la direccion del archivo en donde se encuentras los temas:");
                     pathTem = "C:\\Users\\maria\\Desktop\\Temas.txt";
                     ///pathTem = Convert.ToString(Console.ReadLine());
-                    bucle = false;
 
+                    bucle = false;
+                    //SI LOS ELEMENTOS INGRESADOS SON VALIDOS SE SALDRA DEL BUCLE
                     bucle = Objeto.LeerArchivo(pathEst, pathTem, cantidad);
                 }
-                Console.WriteLine("YA SALIO");
+           
+                //METODO QUE REALIZA LA DIVISION DE ESTUDIANTES, GRUPOS Y TEMAS
+                Objeto.DivisionGTE(cantidad);
 
-                Objeto.DivisionTemas(cantidad);                
+                //IMPRIMIR LAS LISTA DE SELECCION DE ESTUDIANTES, GRUPOS Y TEMAS
+                foreach (var item in Objeto.seleccion)
+                {
+                Console.WriteLine(item);
+                }
 
                 Console.ReadKey();
-            }
-
-           
+            }           
         }
     }
-}
+
